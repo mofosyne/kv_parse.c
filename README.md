@@ -9,10 +9,9 @@ Composible ANSI C Key Value String Parser
 If you need a kv parser that is simpler and single function... then consider <https://github.com/mofosyne/kv_get_value.c>
 
 Compared to my other simple kv implementation above. This implementation is a bit more flexible 
-and efficient at handling many key value pairs as well as various key value formats (ini, etc...) 
-at a cost of being made out of multiple functions rather than one functions.
+and efficient at handling many key value pairs as well as providing opportunities for the users
+to more easily modify the code to support other various key value formats (ini, etc...)
 
-However this make it more flexible for you to adapt it for more kinds of key value based inputs.
 For example handling ini files, where you can add an additional check in between to parse out
 the ini sections `[sections]` before handling the key value pairs.
 
