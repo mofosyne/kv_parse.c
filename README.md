@@ -1,10 +1,12 @@
-# kv_parse
+# kv_parse.c
 
 <versionBadge>![Version 1.0.0](https://img.shields.io/badge/version-1.0.0-blue.svg)</versionBadge>
 [![C](https://img.shields.io/badge/Language-C-blue.svg)](https://en.wikipedia.org/wiki/C_(programming_language))
 [![CI/CD Status Badge](https://github.com/mofosyne/kv_get_value.c/actions/workflows/c-cpp.yml/badge.svg)](https://github.com/mofosyne/kv_get_value/actions)
 
-Composable Key Value Parser
+Composible ANSI C Key Value String Parser
+
+If you need a kv parser that is simpler and single function... then consider <https://github.com/mofosyne/kv_get_value.c>
 
 Compared to my other simple kv implementation <https://github.com/mofosyne/kv_get_value.c>
 This implementation is a bit more flexible and efficient at handling many key value pairs
