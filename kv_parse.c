@@ -153,3 +153,55 @@ size_t kv_parse_get_value(FILE *file, char *value, size_t value_max)
     value[0] = '\0';
     return 0;
 }
+
+size_t kv_parse_check_section(FILE *file, char *section, size_t section_max)
+{
+    long start_of_line = ftell(file);
+    int ch = '\0';
+
+    /* Check For INI/TOML Section Opening Delimiter */
+    ch = getc(file);
+    if (ch != '[')
+    {
+        fseek(file, start_of_line, SEEK_SET);
+        return false;
+    }
+
+    /* Copy Section To Buffer */
+    ch = getc(file);
+    for (int i = 0; i < (section_max - 1); ch = getc(file))
+    {
+        /* Check For INI/TOML Section Closing Delimiter */
+        if (ch == EOF || ch == '\r' || ch == '\n')
+        {
+            /* End Of Line (Scan for closing bracket)*/
+            fseek(file, start_of_line, SEEK_SET);
+            section[i] = '\0';
+            while (i > 0 && (section[i - 1] == ' ' || section[i - 1] == '\t'))
+            {
+                i--;
+                section[i] = '\0';
+            }
+
+            /* Expecting closing bracket. Don't return a section if missing */
+            if (section[i - 1] != ']')
+            {
+                fseek(file, start_of_line, SEEK_SET);
+                section[0] = '\0';
+                return 0;
+            }
+
+            /* Exclude closing bracket. Return section string. */
+            i--;
+            section[i] = '\0';
+            return i;
+        }
+
+        section[i++] = ch == EOF ? '\0' : ch;
+    }
+
+    /* Value too large for buffer. Don't return a value. */
+    fseek(file, start_of_line, SEEK_SET);
+    section[0] = '\0';
+    return 0;
+}

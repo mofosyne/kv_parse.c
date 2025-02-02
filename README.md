@@ -13,7 +13,9 @@ and efficient at handling many key value pairs as well as providing opportunitie
 to more easily modify the code to support other various key value formats (ini, etc...)
 
 For example handling ini files, where you can add an additional check in between to parse out
-the ini sections `[sections]` before handling the key value pairs.
+the ini sections `[sections]` before handling the key value pairs. To do so you could try using
+`kv_parse_buffer_check_section()` or `kv_parse_check_section()` to parse out the sections that is
+also provided in this repository as a convenience function for you.
 
 As before, this implementation will not try to parse out the value output to minimise complexity...
 but this will at least handle the most annoying bits about handling key value pairs such as callbacks 
@@ -64,6 +66,8 @@ The key design properties that my implementation has:
       But comments should make it easy to identify what to add.
     - No multiline handling. To control complexity level of the parser... multiline support is intentionally dropped.
       (But due to the composible design, it will be easier for developers to replace the value reader with their own implementation.)
+
+**Pull Requests Appreciated**
 
 ## Buffered API
 

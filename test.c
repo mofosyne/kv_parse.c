@@ -15,7 +15,7 @@
 #include <stdio.h>
 #include <string.h>
 
-int kv_buffer_parse(char *input, const char *key, char *value, size_t value_max)
+int kv_parse_buffer(char *input, const char *key, char *value, size_t value_max)
 {
     for (size_t line = 0; (input = kv_parse_buffer_next_line(input, line)) != NULL; line++)
     {
@@ -28,7 +28,7 @@ int kv_buffer_parse(char *input, const char *key, char *value, size_t value_max)
     return 0;
 }
 
-int kv_file_parse(FILE *file, const char *key, char *value, size_t value_max)
+int kv_parse(FILE *file, const char *key, char *value, size_t value_max)
 {
     rewind(file);
     for (size_t line = 0; kv_parse_next_line(file, line); line++)
@@ -42,47 +42,47 @@ int kv_file_parse(FILE *file, const char *key, char *value, size_t value_max)
 }
 
 // Test case function
-void run_kv_parse_tests()
+void run_kv_parse_buffer_tests()
 {
     char buffer[100] = {0};
     int buffer_count = 0;
 
     // **Test 1: Basic Key-Value Retrieval**
     memset(buffer, 0, sizeof(buffer));
-    buffer_count = kv_buffer_parse("key1=value1\nkey2=value2", "key1", buffer, sizeof(buffer));
+    buffer_count = kv_parse_buffer("key1=value1\nkey2=value2", "key1", buffer, sizeof(buffer));
     assert(buffer_count == 6);
     assert(strcmp(buffer, "value1") == 0);
 
     // **Test 2: Retrieve Last Key**
     memset(buffer, 0, sizeof(buffer));
-    buffer_count = kv_buffer_parse("a=b\nc=d\ne=f\ng=hello", "g", buffer, sizeof(buffer));
+    buffer_count = kv_parse_buffer("a=b\nc=d\ne=f\ng=hello", "g", buffer, sizeof(buffer));
     assert(buffer_count == 5);
     assert(strcmp(buffer, "hello") == 0);
 
     // **Test 3: Key Not Found**
     memset(buffer, 0, sizeof(buffer));
-    buffer_count = kv_buffer_parse("a=b\nc=d", "z", buffer, sizeof(buffer));
+    buffer_count = kv_parse_buffer("a=b\nc=d", "z", buffer, sizeof(buffer));
     assert(buffer_count == 0);
 
     // **Test 4: Buffer Too Small**
     memset(buffer, 0, sizeof(buffer));
-    buffer_count = kv_buffer_parse("longkey=longvalue", "longkey", buffer, sizeof(buffer));
+    buffer_count = kv_parse_buffer("longkey=longvalue", "longkey", buffer, sizeof(buffer));
     assert(buffer_count == 9);
     assert(strcmp(buffer, "longvalue") == 0);
 
     // **Test 5: Empty Input**
     memset(buffer, 0, sizeof(buffer));
-    buffer_count = kv_buffer_parse("", "anykey", buffer, sizeof(buffer));
+    buffer_count = kv_parse_buffer("", "anykey", buffer, sizeof(buffer));
     assert(buffer_count == 0);
 
     // **Test 6: Input Without Key-Value Pairs**
     memset(buffer, 0, sizeof(buffer));
-    buffer_count = kv_buffer_parse("randomtext\nanotherline", "key", buffer, sizeof(buffer));
+    buffer_count = kv_parse_buffer("randomtext\nanotherline", "key", buffer, sizeof(buffer));
     assert(buffer_count == 0);
 
     //  **Test 7: Handling Spaces Around Key and Value**
     memset(buffer, 0, sizeof(buffer));
-    buffer_count = kv_buffer_parse(" key = value \n next = test ", "key", buffer, sizeof(buffer));
+    buffer_count = kv_parse_buffer(" key = value \n next = test ", "key", buffer, sizeof(buffer));
 #ifdef KV_PARSE_WHITESPACE_SKIP
     assert(buffer_count == 5);
     assert(strcmp(buffer, "value") == 0);
@@ -92,31 +92,31 @@ void run_kv_parse_tests()
 
     // **Test 8: Duplicate Keys (Return First Occurrence)**
     memset(buffer, 0, sizeof(buffer));
-    buffer_count = kv_buffer_parse("x=1\nx=2\nx=3", "x", buffer, sizeof(buffer));
+    buffer_count = kv_parse_buffer("x=1\nx=2\nx=3", "x", buffer, sizeof(buffer));
     assert(buffer_count == 1);
     assert(strcmp(buffer, "1") == 0);
 
     // **Test 9: Newline Variations (Windows vs. Unix)**
     memset(buffer, 0, sizeof(buffer));
-    buffer_count = kv_buffer_parse("a=one\r\nb=two", "b", buffer, sizeof(buffer));
+    buffer_count = kv_parse_buffer("a=one\r\nb=two", "b", buffer, sizeof(buffer));
     assert(buffer_count == 3);
     assert(strcmp(buffer, "two") == 0);
 
     // **Test 10: Key With Special Characters**
     memset(buffer, 0, sizeof(buffer));
-    buffer_count = kv_buffer_parse("user-name=admin\nuser@domain.com=me", "user-name", buffer, sizeof(buffer));
+    buffer_count = kv_parse_buffer("user-name=admin\nuser@domain.com=me", "user-name", buffer, sizeof(buffer));
     assert(buffer_count == 5);
     assert(strcmp(buffer, "admin") == 0);
 
     // **Test 11: Value Containing '='**
     memset(buffer, 0, sizeof(buffer));
-    buffer_count = kv_buffer_parse("path=/home/user=data", "path", buffer, sizeof(buffer));
+    buffer_count = kv_parse_buffer("path=/home/user=data", "path", buffer, sizeof(buffer));
     assert(buffer_count == 15);
     assert(strcmp(buffer, "/home/user=data") == 0);
 
     // **Test 12: Quoted String **
     memset(buffer, 0, sizeof(buffer));
-    buffer_count = kv_buffer_parse("path=\"/home/user=data\"", "path", buffer, sizeof(buffer));
+    buffer_count = kv_parse_buffer("path=\"/home/user=data\"", "path", buffer, sizeof(buffer));
 #ifdef KV_PARSE_QUOTED_STRINGS
     assert(buffer_count == 15);
     assert(strcmp(buffer, "/home/user=data") == 0);
@@ -127,7 +127,7 @@ void run_kv_parse_tests()
 
     // **Test 13: Uncapped Quoted String **
     memset(buffer, 0, sizeof(buffer));
-    buffer_count = kv_buffer_parse("path=\"/home/user=data", "path", buffer, sizeof(buffer));
+    buffer_count = kv_parse_buffer("path=\"/home/user=data", "path", buffer, sizeof(buffer));
 #ifdef KV_PARSE_QUOTED_STRINGS
     assert(buffer_count == 15);
     assert(strcmp(buffer, "/home/user=data") == 0);
@@ -138,7 +138,7 @@ void run_kv_parse_tests()
 
     // **Test 14: Quoted String With Escaped Quote **
     memset(buffer, 0, sizeof(buffer));
-    buffer_count = kv_buffer_parse("path=\"/home/\\\"user=data\"", "path", buffer, sizeof(buffer));
+    buffer_count = kv_parse_buffer("path=\"/home/\\\"user=data\"", "path", buffer, sizeof(buffer));
 #ifdef KV_PARSE_QUOTED_STRINGS
     assert(buffer_count == 16);
     assert(strcmp(buffer, "/home/\"user=data") == 0);
@@ -147,10 +147,10 @@ void run_kv_parse_tests()
     assert(strcmp(buffer, "\"/home/\\\"user=data\"") == 0);
 #endif
 
-    printf("kv_buffer_parse() passed successfully!\n");
+    printf("kv_parse_buffer() passed successfully!\n");
 }
 
-void run_kv_file_parse_tests()
+void run_kv_parse_tests()
 {
     // **Test 1: Basic Key-Value Retrieval**
     {
@@ -162,7 +162,7 @@ void run_kv_file_parse_tests()
 
         fputs("key1=value1\nkey2=value2", temp);
 
-        buffer_count = kv_file_parse(temp, "key1", buffer, sizeof(buffer));
+        buffer_count = kv_parse(temp, "key1", buffer, sizeof(buffer));
 
         fclose(temp);
 
@@ -180,7 +180,7 @@ void run_kv_file_parse_tests()
 
         fputs("a=b\nc=d\ne=f\ng=hello", temp);
 
-        buffer_count = kv_file_parse(temp, "g", buffer, sizeof(buffer));
+        buffer_count = kv_parse(temp, "g", buffer, sizeof(buffer));
 
         fclose(temp);
 
@@ -198,7 +198,7 @@ void run_kv_file_parse_tests()
 
         fputs("a=b\nc=d", temp);
 
-        buffer_count = kv_file_parse(temp, "z", buffer, sizeof(buffer));
+        buffer_count = kv_parse(temp, "z", buffer, sizeof(buffer));
 
         fclose(temp);
 
@@ -215,7 +215,7 @@ void run_kv_file_parse_tests()
 
         fputs("longkey=longvalue", temp);
 
-        buffer_count = kv_file_parse(temp, "longkey", buffer, sizeof(buffer));
+        buffer_count = kv_parse(temp, "longkey", buffer, sizeof(buffer));
 
         fclose(temp);
 
@@ -233,7 +233,7 @@ void run_kv_file_parse_tests()
 
         fputs("", temp);
 
-        buffer_count = kv_file_parse(temp, "anykey", buffer, sizeof(buffer));
+        buffer_count = kv_parse(temp, "anykey", buffer, sizeof(buffer));
 
         fclose(temp);
 
@@ -250,7 +250,7 @@ void run_kv_file_parse_tests()
 
         fputs("randomtext\nanotherline", temp);
 
-        buffer_count = kv_file_parse(temp, "key", buffer, sizeof(buffer));
+        buffer_count = kv_parse(temp, "key", buffer, sizeof(buffer));
 
         fclose(temp);
 
@@ -267,7 +267,7 @@ void run_kv_file_parse_tests()
 
         fputs(" key = value \n next = test ", temp);
 
-        buffer_count = kv_file_parse(temp, "key", buffer, sizeof(buffer));
+        buffer_count = kv_parse(temp, "key", buffer, sizeof(buffer));
 
         fclose(temp);
 
@@ -289,7 +289,7 @@ void run_kv_file_parse_tests()
 
         fputs("x=1\nx=2\nx=3", temp);
 
-        buffer_count = kv_file_parse(temp, "x", buffer, sizeof(buffer));
+        buffer_count = kv_parse(temp, "x", buffer, sizeof(buffer));
 
         fclose(temp);
 
@@ -307,7 +307,7 @@ void run_kv_file_parse_tests()
 
         fputs("a=one\r\nb=two", temp);
 
-        buffer_count = kv_file_parse(temp, "b", buffer, sizeof(buffer));
+        buffer_count = kv_parse(temp, "b", buffer, sizeof(buffer));
 
         fclose(temp);
 
@@ -325,7 +325,7 @@ void run_kv_file_parse_tests()
 
         fputs("user-name=admin\nuser@domain.com=me", temp);
 
-        buffer_count = kv_file_parse(temp, "user-name", buffer, sizeof(buffer));
+        buffer_count = kv_parse(temp, "user-name", buffer, sizeof(buffer));
 
         fclose(temp);
 
@@ -343,7 +343,7 @@ void run_kv_file_parse_tests()
 
         fputs("path=/home/user=data", temp);
 
-        buffer_count = kv_file_parse(temp, "path", buffer, sizeof(buffer));
+        buffer_count = kv_parse(temp, "path", buffer, sizeof(buffer));
 
         fclose(temp);
 
@@ -361,7 +361,7 @@ void run_kv_file_parse_tests()
 
         fputs("path=\"/home/user=data\"", temp);
 
-        buffer_count = kv_file_parse(temp, "path", buffer, sizeof(buffer));
+        buffer_count = kv_parse(temp, "path", buffer, sizeof(buffer));
 
         fclose(temp);
 
@@ -384,7 +384,7 @@ void run_kv_file_parse_tests()
 
         fputs("path=\"/home/user=data", temp);
 
-        buffer_count = kv_file_parse(temp, "path", buffer, sizeof(buffer));
+        buffer_count = kv_parse(temp, "path", buffer, sizeof(buffer));
 
         fclose(temp);
 
@@ -407,7 +407,7 @@ void run_kv_file_parse_tests()
 
         fputs("path=\"/home/\\\"user=data\"", temp);
 
-        buffer_count = kv_file_parse(temp, "path", buffer, sizeof(buffer));
+        buffer_count = kv_parse(temp, "path", buffer, sizeof(buffer));
 
         fclose(temp);
 
@@ -420,15 +420,51 @@ void run_kv_file_parse_tests()
 #endif
     }
 
-    printf("kv_file_parse() passed successfully!\n");
+    printf("kv_parse() passed successfully!\n");
+}
+
+void run_kv_parse_buffer_check_section()
+{
+    {
+        // **Test 1: Basic Section Detection**
+        char buffer[100] = {0};
+        int buffer_count = kv_parse_buffer_check_section("[section1]\n", buffer, sizeof(buffer));
+        assert(buffer_count == 8);
+        assert(strcmp(buffer, "section1") == 0);
+    }
+
+    printf("kv_parse_buffer_check_section() passed successfully!\n");
+}
+
+void run_kv_parse_check_section()
+{
+    {
+        // **Test 1: Basic Section Detection**
+        char buffer[100] = {0};
+
+        FILE *temp = tmpfile();
+        assert(temp != NULL);
+
+        fputs("[section1]\n", temp);
+        rewind(temp);
+
+        int buffer_count = kv_parse_check_section(temp, buffer, sizeof(buffer));
+
+        fclose(temp);
+        assert(buffer_count == 8);
+        assert(strcmp(buffer, "section1") == 0);
+    }
+
+    printf("kv_parse_check_section() passed successfully!\n");
 }
 
 // Run tests in main()
 int main()
 {
+    run_kv_parse_buffer_tests();
     run_kv_parse_tests();
-    run_kv_file_parse_tests();
+    run_kv_parse_buffer_check_section();
+    run_kv_parse_check_section();
     printf("All tests passed successfully!\n");
     return 0;
 }
-

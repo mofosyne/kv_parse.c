@@ -10,17 +10,13 @@
  *
  * @example Usage Example:
  * @code
- * int kv_buffer_parse(char *input, const char *key, char *value, size_t value_max)
+ * for (size_t line = 0; (input = kv_parse_buffer_next_line(input, line)) != NULL; line++)
  * {
- *     for (size_t line = 0; (input = kv_parse_buffer_next_line(input, line)) != NULL; line++)
+ *     char *input_value = NULL;
+ *     if ((input_value = kv_parse_buffer_check_key(input, key)) != NULL)
  *     {
- *         char *input_value = NULL;
- *         if ((input_value = kv_parse_buffer_check_key(input, key)) != NULL)
- *         {
- *             return kv_parse_buffer_get_value(input_value, value, value_max);
- *         }
+ *         return kv_parse_buffer_get_value(input_value, value, value_max);
  *     }
- *     return 0;
  * }
  * @endcode
  *
@@ -73,4 +69,19 @@ char *kv_parse_buffer_check_key(char *str, const char *key);
  * @return The length of the extracted value, or 0 if the value is too large or empty.
  */
 size_t kv_parse_buffer_get_value(char *str, char *value, size_t value_max);
+
+/**
+ * @brief Parses and extracts an INI/TOML-style section header.
+ *
+ * This function scans a file to detect and extract a section header of the format `[Section]`.
+ * The extracted section name (without brackets) is stored in the provided buffer.
+ *
+ * @param file Pointer to an open file stream.
+ * @param section Buffer to store the extracted section name.
+ * @param section_max Maximum size of the buffer (including null terminator).
+ * @return The length of the extracted section name on success, 0 on failure.
+ *
+ * @note If the section name exceeds `section_max - 1`, the function resets the file position and returns 0.
+ */
+size_t kv_parse_buffer_check_section(char *str, char *section, size_t section_max);
 #endif

@@ -136,3 +136,47 @@ size_t kv_parse_buffer_get_value(char *str, char *value, size_t value_max)
     value[0] = '\0';
     return 0;
 }
+
+size_t kv_parse_buffer_check_section(char *str, char *section, size_t section_max)
+{
+    /* Check For INI/TOML Section Opening Delimiter */
+    if (*str != '[')
+    {
+        return false;
+    }
+    str++;
+
+    /* Copy Section To Buffer */
+    for (int i = 0; i < (section_max - 1); str++)
+    {
+        /* Check For INI/TOML Section Closing Delimiter */
+        if (*str == '\0' || *str == '\r' || *str == '\n')
+        {
+            /* End Of Line (Scan for closing bracket)*/
+            section[i] = '\0';
+            while (i > 0 && (section[i - 1] == ' ' || section[i - 1] == '\t'))
+            {
+                i--;
+                section[i] = '\0';
+            }
+
+            /* Expecting closing bracket. Don't return a section if missing */
+            if (section[i - 1] != ']')
+            {
+                section[0] = '\0';
+                return 0;
+            }
+
+            /* Exclude closing bracket. Return section string. */
+            i--;
+            section[i] = '\0';
+            return i;
+        }
+
+        section[i++] = *str;
+    }
+
+    /* Value too large for buffer. Don't return a value. */
+    section[0] = '\0';
+    return 0;
+}
