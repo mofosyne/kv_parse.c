@@ -26,6 +26,30 @@ configuration language. For more complex INI style parsing (ergo section support
 * <https://github.com/clibs/inih> : Used by clib themselves, relatively simple. Uses callbacks.
 * <https://github.com/madmurphy/libconfini> : More complex and can parse typed data in a multi line manner. Uses Callbacks.
 
+Overall this kv parser can parse Bash Style key value files
+
+```c
+XDG_SESSION_DESKTOP=cinnamon
+QT_QPA_PLATFORMTHEME=qt5ct
+XDG_SESSION_TYPE=x11
+```
+
+But we can also interpret ':' and also skip whitespace with `KV_PARSE_WHITESPACE_SKIP` compile flag.
+
+```yaml
+XDG_SESSION_DESKTOP   : cinnamon
+QT_QPA_PLATFORMTHEME  : qt5ct
+XDG_SESSION_TYPE      : x11
+```
+
+And if you want escaped quote strings like in c then you can use `KV_PARSE_QUOTED_STRINGS` compile flag.
+
+```c
+XDG_SESSION_DESKTOP="cinnamon"
+QT_QPA_PLATFORMTHEME="qt5ct"
+XDG_SESSION_TYPE="x11"
+```
+
 The key design properties that my implementation has:
 * Pros:
     - No Malloc
