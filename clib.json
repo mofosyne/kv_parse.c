@@ -21,5 +21,23 @@
       "disable flag": "KV_PARSE_DISABLE_QUOTED_STRINGS",
       "description": "Handles values enclosed in single (`'`) or double (`\"`) quotes"
     }
+  ],
+  "profiles": [
+    {
+      "name": "File Stream Only",
+      "src": [
+        "kv_parse.c",
+        "kv_parse.h"
+      ],
+      "description": "Use File Stream Only"
+    },
+    {
+      "name": "Buffer Only",
+      "src": [
+        "kv_parse_buffer.c",
+        "kv_parse_buffer.h"
+      ],
+      "description": "Use Buffer Only"
+    }
   ]
 }
