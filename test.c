@@ -83,7 +83,7 @@ void run_kv_parse_buffer_tests()
     //  **Test 7: Handling Spaces Around Key and Value**
     memset(buffer, 0, sizeof(buffer));
     buffer_count = kv_parse_buffer(" key = value \n next = test ", "key", buffer, sizeof(buffer));
-#ifdef KV_PARSE_WHITESPACE_SKIP
+#ifndef KV_PARSE_DISABLE_WHITESPACE_SKIP
     assert(buffer_count == 5);
     assert(strcmp(buffer, "value") == 0);
 #else
@@ -117,7 +117,7 @@ void run_kv_parse_buffer_tests()
     // **Test 12: Quoted String **
     memset(buffer, 0, sizeof(buffer));
     buffer_count = kv_parse_buffer("path=\"/home/user=data\"", "path", buffer, sizeof(buffer));
-#ifdef KV_PARSE_QUOTED_STRINGS
+#ifndef KV_PARSE_DISABLE_QUOTED_STRINGS
     assert(buffer_count == 15);
     assert(strcmp(buffer, "/home/user=data") == 0);
 #else
@@ -128,7 +128,7 @@ void run_kv_parse_buffer_tests()
     // **Test 13: Uncapped Quoted String **
     memset(buffer, 0, sizeof(buffer));
     buffer_count = kv_parse_buffer("path=\"/home/user=data", "path", buffer, sizeof(buffer));
-#ifdef KV_PARSE_QUOTED_STRINGS
+#ifndef KV_PARSE_DISABLE_QUOTED_STRINGS
     assert(buffer_count == 15);
     assert(strcmp(buffer, "/home/user=data") == 0);
 #else
@@ -139,7 +139,7 @@ void run_kv_parse_buffer_tests()
     // **Test 14: Quoted String With Escaped Quote **
     memset(buffer, 0, sizeof(buffer));
     buffer_count = kv_parse_buffer("path=\"/home/\\\"user=data\"", "path", buffer, sizeof(buffer));
-#ifdef KV_PARSE_QUOTED_STRINGS
+#ifndef KV_PARSE_DISABLE_QUOTED_STRINGS
     assert(buffer_count == 16);
     assert(strcmp(buffer, "/home/\"user=data") == 0);
 #else
@@ -271,7 +271,7 @@ void run_kv_parse_tests()
 
         fclose(temp);
 
-#ifdef KV_PARSE_WHITESPACE_SKIP
+#ifndef KV_PARSE_DISABLE_WHITESPACE_SKIP
         assert(buffer_count == 5);
         assert(strcmp(buffer, "value") == 0);
 #else
@@ -365,7 +365,7 @@ void run_kv_parse_tests()
 
         fclose(temp);
 
-#ifdef KV_PARSE_QUOTED_STRINGS
+#ifndef KV_PARSE_DISABLE_QUOTED_STRINGS
         assert(buffer_count == 15);
         assert(strcmp(buffer, "/home/user=data") == 0);
 #else
@@ -388,7 +388,7 @@ void run_kv_parse_tests()
 
         fclose(temp);
 
-#ifdef KV_PARSE_QUOTED_STRINGS
+#ifndef KV_PARSE_DISABLE_QUOTED_STRINGS
         assert(buffer_count == 15);
         assert(strcmp(buffer, "/home/user=data") == 0);
 #else
@@ -411,7 +411,7 @@ void run_kv_parse_tests()
 
         fclose(temp);
 
-#ifdef KV_PARSE_QUOTED_STRINGS
+#ifndef KV_PARSE_DISABLE_QUOTED_STRINGS
         assert(buffer_count == 16);
         assert(strcmp(buffer, "/home/\"user=data") == 0);
 #else

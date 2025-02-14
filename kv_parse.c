@@ -49,7 +49,7 @@ bool kv_parse_check_key(FILE *file, const char *key)
     long start_of_line = ftell(file);
     char ch = getc(file);
 
-#ifdef KV_PARSE_WHITESPACE_SKIP
+#ifndef KV_PARSE_DISABLE_WHITESPACE_SKIP
     while (ch == ' ' || ch == '\t')
     {
         ch = getc(file);
@@ -67,7 +67,7 @@ bool kv_parse_check_key(FILE *file, const char *key)
         }
     }
 
-#ifdef KV_PARSE_WHITESPACE_SKIP
+#ifndef KV_PARSE_DISABLE_WHITESPACE_SKIP
     while (ch == ' ' || ch == '\t')
     {
         ch = getc(file);
@@ -89,7 +89,7 @@ size_t kv_parse_get_value(FILE *file, char *value, size_t value_max)
 {
     long start_of_value = ftell(file);
     char ch = getc(file);
-#ifdef KV_PARSE_WHITESPACE_SKIP
+#ifndef KV_PARSE_DISABLE_WHITESPACE_SKIP
     while (ch == ' ' || ch == '\t')
     {
         ch = getc(file);
@@ -97,7 +97,7 @@ size_t kv_parse_get_value(FILE *file, char *value, size_t value_max)
 #endif
 
     /* Copy Value To Buffer */
-#ifdef KV_PARSE_QUOTED_STRINGS
+#ifndef KV_PARSE_DISABLE_QUOTED_STRINGS
     int quote = EOF;
     int prev = EOF;
 #endif
@@ -112,7 +112,7 @@ size_t kv_parse_get_value(FILE *file, char *value, size_t value_max)
                 ungetc('\n', file);
             }
             value[i] = '\0';
-#ifdef KV_PARSE_WHITESPACE_SKIP
+#ifndef KV_PARSE_DISABLE_WHITESPACE_SKIP
             while (i > 0 && (value[i - 1] == ' ' || value[i - 1] == '\t'))
             {
                 i--;
@@ -121,7 +121,7 @@ size_t kv_parse_get_value(FILE *file, char *value, size_t value_max)
 #endif
             return i;
         }
-#ifdef KV_PARSE_QUOTED_STRINGS
+#ifndef KV_PARSE_DISABLE_QUOTED_STRINGS
         else if (quote == EOF && (ch == '\'' || ch == '"'))
         {
             /* Start Of Quoted String */

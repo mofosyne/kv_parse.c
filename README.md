@@ -1,6 +1,6 @@
 # kv_parse.c
 
-<versionBadge>![Version 1.1.0](https://img.shields.io/badge/version-1.1.0-blue.svg)</versionBadge>
+<versionBadge>![Version 1.1.1](https://img.shields.io/badge/version-1.1.1-blue.svg)</versionBadge>
 [![C](https://img.shields.io/badge/Language-C-blue.svg)](https://en.wikipedia.org/wiki/C_(programming_language))
 [![CI/CD Status Badge](https://github.com/mofosyne/kv_get_value.c/actions/workflows/c-cpp.yml/badge.svg)](https://github.com/mofosyne/kv_get_value/actions)
 
@@ -35,7 +35,7 @@ QT_QPA_PLATFORMTHEME=qt5ct
 XDG_SESSION_TYPE=x11
 ```
 
-But we can also interpret ':' and also skip whitespace with `KV_PARSE_WHITESPACE_SKIP` compile flag.
+But we can also interpret ':'
 
 ```yaml
 XDG_SESSION_DESKTOP   : cinnamon
@@ -43,7 +43,7 @@ QT_QPA_PLATFORMTHEME  : qt5ct
 XDG_SESSION_TYPE      : x11
 ```
 
-And if you want escaped quote strings like in c then you can use `KV_PARSE_QUOTED_STRINGS` compile flag.
+We also support escaped quote strings like in c
 
 ```c
 XDG_SESSION_DESKTOP="cinnamon"
