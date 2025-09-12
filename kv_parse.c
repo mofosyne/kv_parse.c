@@ -13,7 +13,7 @@
 
 bool kv_parse_next_line(FILE *file, size_t line_count)
 {
-    char ch = '\0';
+    int ch = '\0';
 
     /* Check if first line */
     if (line_count == 0)
@@ -37,6 +37,7 @@ bool kv_parse_next_line(FILE *file, size_t line_count)
             ungetc(ch, file);
             return true;
         }
+
         ch = getc(file);
     }
 
@@ -47,7 +48,7 @@ bool kv_parse_next_line(FILE *file, size_t line_count)
 bool kv_parse_check_key(FILE *file, const char *key)
 {
     long start_of_line = ftell(file);
-    char ch = getc(file);
+    int ch = getc(file);
 
 #ifndef KV_PARSE_DISABLE_WHITESPACE_SKIP
     while (ch == ' ' || ch == '\t')
@@ -88,7 +89,7 @@ bool kv_parse_check_key(FILE *file, const char *key)
 size_t kv_parse_get_value(FILE *file, char *value, size_t value_max)
 {
     long start_of_value = ftell(file);
-    char ch = getc(file);
+    int ch = getc(file);
 #ifndef KV_PARSE_DISABLE_WHITESPACE_SKIP
     while (ch == ' ' || ch == '\t')
     {
